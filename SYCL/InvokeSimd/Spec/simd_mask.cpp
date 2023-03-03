@@ -22,10 +22,10 @@
 #include <sycl/ext/oneapi/experimental/invoke_simd.hpp>
 #include <sycl/sycl.hpp>
 
+#include <boost/mp11.hpp>
 #include <functional>
 #include <iostream>
 #include <type_traits>
-#include <boost/mp11.hpp>
 
 /* Subgroup size attribute is optional
  * In case it is absent compiler decides what subgroup size to use
@@ -40,22 +40,21 @@ using namespace sycl::ext::oneapi::experimental;
 namespace esimd = sycl::ext::intel::esimd;
 constexpr int VL = 16;
 
-template<typename MaskType>
+template <typename MaskType>
 __attribute__((always_inline)) esimd::simd<float, VL>
 ESIMD_CALLEE(esimd::simd<float, VL> va,
              simd_mask<MaskType, VL> mask) SYCL_ESIMD_FUNCTION {
   return va;
 }
 
-template<typename MaskType>
+template <typename MaskType>
 [[intel::device_indirectly_callable]] SYCL_EXTERNAL
     simd<float, VL> __regcall SIMD_CALLEE(
         simd<float, VL> va, simd_mask<MaskType, VL> mask) SYCL_ESIMD_FUNCTION;
 
 using namespace sycl;
 
-template<typename MaskType>
-int test(queue q) {
+template <typename MaskType> int test(queue q) {
   constexpr unsigned Size = 1024;
   constexpr unsigned GroupSize = 4 * VL;
 
@@ -129,7 +128,7 @@ int test(queue q) {
   return err_cnt > 0 ? 1 : 0;
 }
 
-template<typename MaskType>
+template <typename MaskType>
 [[intel::device_indirectly_callable]] SYCL_EXTERNAL
     simd<float, VL> __regcall SIMD_CALLEE(
         simd<float, VL> va, simd_mask<MaskType, VL> mask) SYCL_ESIMD_FUNCTION {
@@ -146,18 +145,17 @@ int main() {
   bool passed = true;
   const bool SupportsDouble = dev.has(aspect::fp64);
   using namespace boost::mp11;
-  using MaskTypes = std::tuple<char, char16_t, char32_t, wchar_t, signed char,
-                               signed short, signed int, signed long,
-                               signed long long, unsigned char, unsigned short,
-                               unsigned int, unsigned long, unsigned long long,
-                               float, double>;
-  tuple_for_each(MaskTypes{}, [&](auto&& x) {
-                                using T = std::remove_reference_t<decltype(x)>;
-                                if (std::is_same_v<T, double> && !SupportsDouble)
-                                  return;
-                                passed &= !test<T>(q);
-                              }
-    );
+  using MaskTypes =
+      std::tuple<char, char16_t, char32_t, wchar_t, signed char, signed short,
+                 signed int, signed long, signed long long, unsigned char,
+                 unsigned short, unsigned int, unsigned long,
+                 unsigned long long, float, double>;
+  tuple_for_each(MaskTypes{}, [&](auto &&x) {
+    using T = std::remove_reference_t<decltype(x)>;
+    if (std::is_same_v<T, double> && !SupportsDouble)
+      return;
+    passed &= !test<T>(q);
+  });
   std::cout << (passed ? "Test passed\n" : "TEST FAILED\n");
   return passed ? 0 : 1;
 }
