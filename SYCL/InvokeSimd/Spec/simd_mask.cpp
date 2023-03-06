@@ -18,11 +18,11 @@
  * This test also runs with all types of VISA link time optimizations enabled.
  */
 
+#include <sycl/detail/boost/mp11.hpp>
 #include <sycl/ext/intel/esimd.hpp>
 #include <sycl/ext/oneapi/experimental/invoke_simd.hpp>
 #include <sycl/sycl.hpp>
 
-#include <boost/mp11.hpp>
 #include <functional>
 #include <iostream>
 #include <type_traits>
