@@ -144,7 +144,7 @@ int main() {
             << "\n";
   bool passed = true;
   const bool SupportsDouble = dev.has(aspect::fp64);
-  using namespace boost::mp11;
+  using namespace sycl::detail::boost::mp11;
   using MaskTypes =
       std::tuple<char, char16_t, char32_t, wchar_t, signed char, signed short,
                  signed int, signed long, signed long long, unsigned char,
