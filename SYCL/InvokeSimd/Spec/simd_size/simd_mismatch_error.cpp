@@ -2,11 +2,8 @@
 // REQUIRES: gpu && linux
 // UNSUPPORTED: cuda || hip
 //
-// TODO: enable when Jira ticket resolved
-// XFAIL: gpu
-//
 // Check that full compilation works:
-// RUN: %clangxx -fsycl -fno-sycl-device-code-split-esimd -Xclang -fsycl-allow-func-ptr %s -o %t.out | FileCheck %s
+// RUN: %clangxx -fsycl -fno-sycl-device-code-split-esimd -Xclang -fsycl-allow-func-ptr %s -o %t.out 2>&1 | FileCheck %s
 
 /* Tests invoke_simd support in the compiler/headers
  * The test checks that compiler emits a meaningful and user friendly error message
@@ -23,31 +20,29 @@ int main(void) {
             << "\n";
   bool passed = true;
 
-  // TODO: exact error message is a subject to future changes
-
   // simd_size 8
   passed &= test<4, 8>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (8) does not match size of invoke_simd return type (4){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 8': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
   passed &= test<16, 8>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (8) does not match size of invoke_simd return type (16){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 8': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
   passed &= test<32, 8>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (8) does not match size of invoke_simd return type (32){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 8': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
 
   // simd_size 16
   passed &= test<4, 16>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (16) does not match size of invoke_simd return type (4){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 16': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
   passed &= test<8, 16>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (16) does not match size of invoke_simd return type (8){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 16': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
   passed &= test<32, 16>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (16) does not match size of invoke_simd return type (32){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 16': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
 
   // simd_size 32
   passed &= test<4, 32>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (32) does not match size of invoke_simd return type (4){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 32': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
   passed &= test<8, 32>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (32) does not match size of invoke_simd return type (8){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 32': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
   passed &= test<16, 32>(q);
-  // CHECK: {{.*}}error: Kernel subgroup size (32) does not match size of invoke_simd return type (16){{.*}}
+  // CHECK: {{.*}}error:{{.*}}static assertion failed due to requirement 'RetVecLength == 32': invoke_simd callee return type vector length must match kernel subgroup size{{.*}}
 
   std::cout << (passed ? "Passed\n" : "FAILED\n");
   return passed ? 0 : 1;
