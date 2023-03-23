@@ -3,7 +3,7 @@
 // UNSUPPORTED: cuda || hip
 //
 // Check that full compilation works:
-// RUN: %clangxx -fsycl -fno-sycl-device-code-split-esimd -Xclang -fsycl-allow-func-ptr %s -o %t.out 2>&1 | FileCheck %s
+// RUN: !%clangxx -fsycl -fno-sycl-device-code-split-esimd -Xclang -fsycl-allow-func-ptr %s -o %t.out 2>&1 | FileCheck %s
 
 /* Tests invoke_simd support in the compiler/headers
  * The test checks that compiler emits a meaningful and user friendly error message
