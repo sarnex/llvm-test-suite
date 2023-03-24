@@ -84,7 +84,7 @@ int main(void) {
                                          [=](id<1> i) { PA[i] = PA[i] + 1; });
     });
     e.wait();
-  } catch (cl::sycl::exception const &e) {
+  } catch (sycl::exception const &e) {
     std::cout << "SYCL exception caught: " << e.what() << '\n';
     return 2;
   }
